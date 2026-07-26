@@ -2000,8 +2000,8 @@
       </div>
       <div class="viewer-desc-modal" id="viewerDescModal">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; position:sticky; top:0; background:inherit; z-index:11;">
-          <h3 style="margin:0; font-size: 16px;">Description</h3>
           <button class="iconbtn" id="btnCloseDesc" style="width:30px; height:30px; background:rgba(255,255,255,0.1);">✕</button>
+          <h3 style="margin:0; font-size: 16px; flex:1; text-align:right;">Description</h3>
         </div>
         <div id="viewerDescFull" style="font-size: 14px; line-height: 1.5;"></div>
       </div>
@@ -3828,6 +3828,28 @@
         renderDrawer();
       }
       function closeDrawer() { drawerBackdrop.classList.remove('open'); drawer.classList.remove('open'); }
+      
+      let dTouchStartY = 0, dTouchStartX = 0, dIsSwiping = false;
+      drawer.addEventListener('touchstart', e => {
+        if (e.touches.length === 1 && drawerBody.scrollTop <= 0) {
+          dTouchStartY = e.touches[0].clientY;
+          dTouchStartX = e.touches[0].clientX;
+          dIsSwiping = true;
+        } else {
+          dIsSwiping = false;
+        }
+      }, { passive: true });
+      drawer.addEventListener('touchmove', e => {
+        if (dIsSwiping && e.touches.length === 1) {
+          const dy = e.touches[0].clientY - dTouchStartY;
+          const dx = e.touches[0].clientX - dTouchStartX;
+          if (dy > 80 && dy > Math.abs(dx) * 1.5) {
+            closeDrawer();
+            dIsSwiping = false;
+          }
+        }
+      }, { passive: true });
+
       bindTap(drawerBackdrop, closeDrawer);
       document.querySelectorAll('.drawer-tab').forEach(t => { t.onclick = () => openDrawer(t.dataset.tab); });
       bindTap($('btnTagsDrawer'), () => openDrawer('tags'));
