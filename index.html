@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="referrer" content="no-referrer">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <title>KnotHUB</title>
   <style>
@@ -968,6 +969,15 @@
       opacity: 0;
       pointer-events: none;
     }
+    
+    .viewer.ui-hidden .viewer-top *,
+    .viewer.ui-hidden .viewer-side *,
+    .viewer.ui-hidden .viewer-bottom *,
+    .viewer.ui-hidden .viewer-bottom-left *,
+    .viewer.ui-hidden .viewer-bottom-right * {
+      pointer-events: none !important;
+    }
+
 
     .viewer.ui-hidden {
       cursor: none;
@@ -1385,7 +1395,7 @@
       height: 16px;
     }
 
-    @media (max-width: 700px) {
+    @media (max-width: 750px) {
       .ht-text {
         display: none;
       }
@@ -1523,6 +1533,7 @@
       transition: opacity .18s ease, transform .18s ease;
       padding: 18px 18px calc(18px + var(--safe-bottom));
       overflow-y: auto;
+      overflow-x: hidden;
     }
 
     .panel.open {
@@ -1817,6 +1828,30 @@
     .searchwrap:not(:focus-within) .favtagbar {
       display: none !important;
     }
+
+    /* ---------- Bottom Bar on Thin Screens ---------- */
+    @media (max-width: 750px) {
+      body:not(.force-top-bar) #app {
+        flex-direction: column-reverse;
+      }
+      body:not(.force-top-bar) .topbar {
+        border-bottom: none;
+        border-top: 1px solid var(--line);
+        padding: 5px 10px calc(5px + var(--safe-bottom)) 10px;
+      }
+      body:not(.force-top-bar) .searchwrap {
+        border-bottom: none;
+        border-top: 1px solid var(--line);
+      }
+      body:not(.force-top-bar) .autocomplete-wrap {
+        top: auto;
+        bottom: 100%;
+        border-top: 1px solid var(--line);
+        border-bottom: none;
+        border-radius: 10px 10px 0 0;
+        box-shadow: 0 -8px 24px rgba(0,0,0,.45);
+      }
+    }
   </style>
 </head>
 
@@ -1861,14 +1896,7 @@
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
         </svg>
       </button>
-      <button class="iconbtn" id="btnDownloadAll" title="Download all images as ZIP" style="font-size:16px;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-          stroke-linejoin="round" style="width:16px;height:16px;">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-          <polyline points="7 10 12 15 17 10"></polyline>
-          <line x1="12" y1="15" x2="12" y2="3"></line>
-        </svg>
-      </button>
+
       <button class="iconbtn" id="btnMasonryToggle" title="Toggle Grid Layout" style="font-size:16px;">⊞</button>
       <button class="iconbtn" id="btnSlideshow" title="Slideshow">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
@@ -2121,6 +2149,13 @@
         </label>
         <div class="hint">Flips list actions (like tag buttons) to the left edge.</div>
       </div>
+      <div class="field">
+        <label class="setting-row" style="display:flex; justify-content:space-between; align-items:center;">
+          <span>Force Top Bar on Mobile</span>
+          <input type="checkbox" id="chkForceTopBar" class="toggle">
+        </label>
+        <div class="hint">Prevents the navigation and search bar from moving to the bottom of the screen on thin windows.</div>
+      </div>
 
       <h2 style="margin-top:26px;">Appearance</h2>
       <div class="field">
@@ -2128,7 +2163,8 @@
         <div style="display:flex; gap:10px; align-items:center;">
           <input type="color" id="setAccent" value="#e8a33d"
             style="width:52px;height:38px;padding:2px;border-radius:7px;border:1px solid var(--line);background:var(--bg-inset);">
-          <div style="font-family:var(--mono); font-size:12px; color:var(--text-dim);" id="accentHexLabel">#e8a33d</div>
+          <input type="text" id="setAccentHex" value="#e8a33d" 
+            style="width:85px; height:38px; padding:8px; border-radius:7px; border:1px solid var(--line); background:var(--bg-inset); color:var(--text); font-family:var(--mono); font-size:13px; outline:none;">
         </div>
         <div class="hint">Changes apply immediately and are remembered.</div>
       </div>
@@ -2137,8 +2173,8 @@
         <div style="display:flex; gap:10px; align-items:center;">
           <input type="color" id="setBgColor" value="#1b1d1f"
             style="width:52px;height:38px;padding:2px;border-radius:7px;border:1px solid var(--line);background:var(--bg-inset);">
-          <div style="font-family:var(--mono); font-size:12px; color:var(--text-dim);" id="bgColorHexLabel">#1b1d1f
-          </div>
+          <input type="text" id="setBgColorHex" value="#1b1d1f" 
+            style="width:85px; height:38px; padding:8px; border-radius:7px; border:1px solid var(--line); background:var(--bg-inset); color:var(--text); font-family:var(--mono); font-size:13px; outline:none;">
         </div>
         <div class="hint">Changes the main background color immediately and is remembered.</div>
       </div>
@@ -2209,7 +2245,7 @@
       // ======================================================================
       //  PERSISTENT STATE
       // ======================================================================
-      const DEFAULTS = { sourceUrl: 'https://e926.net', username: '', apiKey: '', autoHideUI: true, masonry: false, leftHandedMode: false };
+      const DEFAULTS = { sourceUrl: 'https://e926.net', username: '', apiKey: '', autoHideUI: true, masonry: false, leftHandedMode: false, forceTopBar: false };
       let settings = { ...DEFAULTS };
       let favoriteTags = [];
       let forYouTags = [];
@@ -2245,6 +2281,8 @@
 
         if (settings.leftHandedMode) document.body.classList.add('left-handed');
         else document.body.classList.remove('left-handed');
+        if (settings.forceTopBar) document.body.classList.add('force-top-bar');
+        else document.body.classList.remove('force-top-bar');
 
         $('chkAutoHide').checked = settings.autoHideUI;
         $('chkMasonry').checked = settings.masonry;
@@ -2638,8 +2676,13 @@
         }
 
         if (tab === 'foryou') {
-          sw.style.display = 'none'; note.style.display = 'block';
-          note.innerHTML = forYouTags.length ? `Showing posts from: <b>${forYouTags.join(', ')}</b>` : `Your followed artists list is empty. Add artist tags in Settings.`;
+          sw.style.display = 'none';
+          if (forYouTags.length) {
+            note.style.display = 'none';
+          } else {
+            note.style.display = 'block';
+            note.innerHTML = 'Your followed artists list is empty. Add artist tags in Settings.';
+          }
           runSearch(true);
         } else if (tab === 'favorites') {
           sw.style.display = 'none'; note.style.display = 'block';
@@ -3019,8 +3062,10 @@
       applyPreviewPanelState();
 
       function showPreview(post) {
-        const url = (post.sample && post.sample.url) || (post.file && post.file.url) || bestThumb(post);
+        let url = (post.sample && post.sample.url) || (post.file && post.file.url) || bestThumb(post);
         if (!url) return;
+        if (url.startsWith('/')) url = settings.sourceUrl.replace(/\/+$/, '') + url;
+        else if (url.startsWith('//')) url = 'https:' + url;
         const ext = post.file && post.file.ext;
         previewImgWrap.innerHTML = '';
         if (ext === 'webm' || ext === 'mp4') {
@@ -3520,6 +3565,7 @@
         } catch (e) { alert('Favorite failed: ' + e.message); }
       });
 
+
       bindTap($('btnDownload'), async () => {
         const post = activeList()[viewerIndex];
         let url = post.file ? post.file.url : bestThumb(post);
@@ -3542,15 +3588,13 @@
           const a = document.createElement('a');
           a.href = URL.createObjectURL(blob);
           a.download = `post_${post.id}.${ext}`;
+          document.body.appendChild(a);
           a.click();
+          a.remove();
           URL.revokeObjectURL(a.href);
         } catch (e) {
-          console.warn('Fetch failed, falling back to window.open', e);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `post_${post.id}.${ext}`;
-          a.target = '_blank';
-          a.click();
+          console.error('All download methods failed', e);
+          alert('Download failed due to strict browser CORS restrictions.\n\nPlease right-click the image on the screen and choose "Save image as..." to download it manually.');
         }
       });
 
@@ -3943,6 +3987,8 @@
       function applyAccentColor(hex) {
         document.documentElement.style.setProperty('--amber', hex);
         document.documentElement.style.setProperty('--amber-dim', shade(hex, -0.55));
+        const l = $('setAccentHex'); if (l && l.value !== hex) l.value = hex;
+        const p = $('setAccent'); if (p && p.value !== hex) p.value = hex;
         const lum = getLuminance(hex);
         if (lum > 0.5) {
           document.documentElement.style.setProperty('--accent-text', '#111');
@@ -3951,11 +3997,11 @@
           document.documentElement.style.setProperty('--accent-text', '#fff');
           document.documentElement.style.setProperty('--accent-icon-filter', 'none');
         }
-        const l = $('accentHexLabel'); if (l) l.textContent = hex;
-        const p = $('setAccent'); if (p) p.value = hex;
       }
       function applyBgColor(hex) {
         document.documentElement.style.setProperty('--bg', hex);
+        const l = $('setBgColorHex'); if (l && l.value !== hex) l.value = hex;
+        const p = $('setBgColor'); if (p && p.value !== hex) p.value = hex;
         const isLight = getLuminance(hex) > 0.5;
         document.documentElement.style.setProperty('--bg-raised', shade(hex, isLight ? -0.04 : 0.04));
         document.documentElement.style.setProperty('--bg-inset', shade(hex, isLight ? -0.08 : -0.03));
@@ -3970,8 +4016,6 @@
           document.documentElement.style.setProperty('--line', 'rgba(255,255,255,0.1)');
           document.documentElement.style.setProperty('--icon-filter', 'none');
         }
-        const l = $('bgColorHexLabel'); if (l) l.textContent = hex;
-        const p = $('setBgColor'); if (p) p.value = hex;
       }
 
       // ======================================================================
@@ -3984,68 +4028,7 @@
       }
       $('btnBlacklistToggle').onclick = () => { blacklistEnabled = !blacklistEnabled; lsSet('blacklistEnabled', blacklistEnabled); updateBlacklistToggleUI(); runSearch(true); };
 
-      $('btnDownloadAll').onclick = async () => {
-        if (!posts || posts.length === 0) {
-          alert('No posts to download.');
-          return;
-        }
-        if (posts.length > 50) {
-          if (!confirm(`You are about to download ${posts.length} images. This might consume a lot of memory and bandwidth. Proceed?`)) return;
-        }
 
-        $('statusline').textContent = 'Initializing zip download...';
-        const zip = new JSZip();
-        let successCount = 0;
-
-        for (let i = 0; i < posts.length; i++) {
-          const post = posts[i];
-          let url = post.file ? post.file.url : bestThumb(post);
-          if (!url) continue;
-
-          if (url.startsWith('/')) url = settings.sourceUrl.replace(/\/+$/, '') + url;
-          else if (url.startsWith('//')) url = 'https:' + url;
-
-          try {
-            $('statusline').textContent = `Downloading image ${i + 1} of ${posts.length}...`;
-            const fetchOpts = { mode: 'cors' };
-            if (url.startsWith(settings.sourceUrl.replace(/\/+$/, ''))) {
-                const auth = authHeader();
-                if (auth) fetchOpts.headers = { 'Authorization': auth };
-            }
-            const resp = await fetch(url, fetchOpts);
-            if (!resp.ok) throw new Error(resp.statusText);
-            const blob = await resp.blob();
-            const ext = (post.file && post.file.ext) ? post.file.ext : url.split('.').pop().split('?')[0] || 'jpg';
-            zip.file(`post_${post.id}.${ext}`, blob);
-            successCount++;
-          } catch (e) {
-            console.error(`Failed to download ${url}`, e);
-          }
-        }
-
-        if (successCount > 0) {
-          $('statusline').textContent = `Zipping ${successCount} images. This may take a moment...`;
-          try {
-            const content = await zip.generateAsync({ type: 'blob' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(content);
-            a.download = `knothub_download_${Date.now()}.zip`;
-            document.body.appendChild(a);
-            a.click();
-            URL.revokeObjectURL(a.href);
-            a.remove();
-            $('statusline').textContent = `Successfully downloaded ${successCount} images.`;
-          } catch (e) {
-            $('statusline').textContent = `Failed to create zip file: ${e.message}`;
-          }
-        } else {
-          $('statusline').textContent = 'No images could be downloaded.';
-        }
-
-        setTimeout(() => {
-          $('statusline').textContent = 'Enter a search or leave blank to browse recent posts.';
-        }, 5000);
-      };
 
       // ======================================================================
       //  SETTINGS PANEL
@@ -4055,9 +4038,9 @@
         $('setUser').value = settings.username;
         $('setKey').value = settings.apiKey;
         $('setAccent').value = lsGet('accentColor') || '#ddad27';
-        $('accentHexLabel').textContent = $('setAccent').value;
+        $('setAccentHex').value = $('setAccent').value;
         $('setBgColor').value = lsGet('bgColor') || '#22384f';
-        $('bgColorHexLabel').textContent = $('setBgColor').value;
+        $('setBgColorHex').value = $('setBgColor').value;
         $('favTagsBox').value = favoriteTags.join('\n');
         $('forYouTagsBox').value = forYouTags.join('\n');
         $('blacklistBox').value = blacklistTags.join('\n');
@@ -4065,6 +4048,7 @@
         $('chkAutoHide').checked = !!settings.autoHideUI;
         $('chkMasonry').checked = !!settings.masonry;
         $('chkLeftHanded').checked = !!settings.leftHandedMode;
+        $('chkForceTopBar').checked = !!settings.forceTopBar;
         $('settingsFollowedTitle').textContent = `Followed Artists (${forYouTags.length})`;
         $('settingsBlacklistTitle').textContent = `Global blacklist (${blacklistTags.length})`;
         if ($('settingsSavedProfilesTitle')) $('settingsSavedProfilesTitle').textContent = `Saved Profiles (${savedProfiles.length})`;
@@ -4074,6 +4058,8 @@
         panel.classList.remove('open');
         if (settings.leftHandedMode) document.body.classList.add('left-handed');
         else document.body.classList.remove('left-handed');
+        if (settings.forceTopBar) document.body.classList.add('force-top-bar');
+        else document.body.classList.remove('force-top-bar');
       }
 
       $('btnSettings').addEventListener('click', () => {
@@ -4083,10 +4069,24 @@
       $('btnClosePanel').addEventListener('click', closeSettings);
 
       $('setAccent').addEventListener('input', e => { applyAccentColor(e.target.value); lsSet('accentColor', e.target.value); });
+      $('setAccentHex').addEventListener('input', e => { 
+        let val = e.target.value; 
+        if (/^#[0-9a-fA-F]{6}$/.test(val)) { applyAccentColor(val); lsSet('accentColor', val); }
+      });
+      
       $('setBgColor').addEventListener('input', e => { applyBgColor(e.target.value); lsSet('bgColor', e.target.value); });
+      $('setBgColorHex').addEventListener('input', e => { 
+        let val = e.target.value; 
+        if (/^#[0-9a-fA-F]{6}$/.test(val)) { applyBgColor(val); lsSet('bgColor', val); }
+      });
+      
       $('chkLeftHanded').addEventListener('change', e => {
         if (e.target.checked) document.body.classList.add('left-handed');
         else document.body.classList.remove('left-handed');
+      });
+      $('chkForceTopBar').addEventListener('change', e => {
+        if (e.target.checked) document.body.classList.add('force-top-bar');
+        else document.body.classList.remove('force-top-bar');
       });
 
       $('btnSaveSettings').onclick = () => {
@@ -4096,8 +4096,10 @@
         settings.autoHideUI = $('chkAutoHide').checked;
         settings.masonry = $('chkMasonry').checked;
         settings.leftHandedMode = $('chkLeftHanded').checked;
+        settings.forceTopBar = $('chkForceTopBar').checked;
         if (settings.masonry) grid.classList.add('masonry'); else grid.classList.remove('masonry');
         if (settings.leftHandedMode) document.body.classList.add('left-handed'); else document.body.classList.remove('left-handed');
+        if (settings.forceTopBar) document.body.classList.add('force-top-bar'); else document.body.classList.remove('force-top-bar');
         persistSettings();
         if (!settings.autoHideUI) {
           viewer.classList.remove('ui-hidden');
@@ -4122,7 +4124,15 @@
         blacklistTags = parseNewlineTags($('blacklistBox').value);
         savedProfiles = parseNewlineTags($('savedProfilesBox').value);
         persistFavTags(); persistForYouTags(); persistBlacklist(); persistSavedProfiles(); renderFavTagBar();
-        if (homeTab === 'foryou') $('foryouNote').innerHTML = forYouTags.length ? `Showing posts from: <b>${forYouTags.join(', ')}</b>` : `Your followed artists list is empty. Add artist tags in Settings.`;
+        if (homeTab === 'foryou') {
+          const note = $('foryouNote');
+          if (forYouTags.length) {
+            note.style.display = 'none';
+          } else {
+            note.style.display = 'block';
+            note.innerHTML = 'Your followed artists list is empty. Add artist tags in Settings.';
+          }
+        }
         if (homeTab === 'saved_profiles') {
           const note = $('foryouNote');
           if (note) note.innerHTML = savedProfiles.length ? `Showing your saved profiles.` : `You haven't saved any profiles yet.`;
