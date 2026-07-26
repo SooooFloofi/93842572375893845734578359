@@ -4028,7 +4028,7 @@
               const date = new Date(c.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
               const initial = (c.creator_name || '?')[0].toUpperCase();
               const body = parseMarkdown(c.body || '');
-              return `<div class="comment-card"><div class="comment-avatar" data-creator-name="${CSS.escape(c.creator_name || '')}">${initial}</div><div class="comment-body-wrap"><div class="comment-meta"><span class="comment-author" data-author="${CSS.escape(c.creator_name || '')}" style="cursor:pointer;text-decoration:underline;">${c.creator_name || 'Anonymous'}</span><span class="comment-score">${score}</span><span class="comment-date">${date}</span></div><div class="comment-text">${body}</div></div></div>`;
+              return `<div class="comment-card"><div class="comment-avatar" data-creator-name="${CSS.escape(c.creator_name || '')}">${initial}</div><div class="comment-body-wrap"><div class="comment-meta"><span class="comment-author" data-author="${CSS.escape(c.creator_name || '')}" style="cursor:pointer;text-decoration:underline;">${c.creator_name || 'Anonymous'}</span><a href="?tags=fav:${encodeURIComponent(c.creator_name || '')}" target="_blank" style="margin-left: 8px; color: var(--amber); text-decoration:none; font-size: 11px;" title="Open favorites in new tab">↗ Favs</a><span class="comment-score">${score}</span><span class="comment-date">${date}</span></div><div class="comment-text">${body}</div></div></div>`;
             }).join('');
 
             const uniqueCreatorNames = [...new Set(comments.map(c => c.creator_name).filter(Boolean))];
@@ -4738,6 +4738,18 @@
             } catch (e) { /* silent */ }
           }, 3000); // Delay to not block initial load
         }
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlTags = urlParams.get('tags');
+        if (urlTags) {
+          currentTags = urlTags.split(/\s+/).filter(Boolean).map(t => {
+            if (t.startsWith('-')) return { tag: t.slice(1), neg: true };
+            return { tag: t, neg: false };
+          });
+          syncSearchInput();
+          renderChips();
+        }
+        
         setHomeTab('search');
         renderFavTagBar();
         initDB();
