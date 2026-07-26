@@ -2861,98 +2861,112 @@
         closeViewer();
       }
 
+      let _userCardReqId = 0;
+      function updateUserCard() {
+        const reqId = ++_userCardReqId;
+        const favTag = homeTab === 'favorites' ? `fav:${settings.username}` : currentTags.find(t => t.tag.startsWith('fav:') && !t.neg)?.tag;
+        if (!favTag) {
+          $('userCardWrap').style.display = 'none';
+          $('userCardWrap').innerHTML = '';
+          return;
+        }
+        const username = favTag.substring(4).trim();
+        if (!username) {
+          $('userCardWrap').style.display = 'none';
+          return;
+        }
+        $('userCardWrap').style.display = 'block';
+        $('userCardWrap').innerHTML = '<div class="empty-note" style="padding: 10px;">Loading user info.</div>';
+        api(`/users.json?search[name_matches]=${encodeURIComponent(username)}`).then(async data => {
+          if (reqId !== _userCardReqId) return;
+          if (data && data.length > 0) {
+            let u = data[0];
+            try {
+              const fullU = await api(`/users/${u.id}.json`);
+              if (fullU) u = fullU;
+            } catch (e) { }
+            let avatarPost = null;
+            let avatarHtml = `<div class="user-card-avatar-ph">${u.name[0].toUpperCase()}</div>`;
+            if (u.avatar_id) {
+              try {
+                const pdata = await api(`/posts/${u.avatar_id}.json`);
+                if (pdata && pdata.post && pdata.post.preview) {
+                  avatarPost = pdata.post;
+                  avatarHtml = `<img class="user-card-avatar" style="cursor:pointer;" src="${avatarPost.preview.url}">`;
+                }
+              } catch (e) { }
+            }
+            if (reqId !== _userCardReqId) return;
+            const isSaved = savedProfiles.includes(u.name);
+            $('userCardWrap').innerHTML = `
+              <div class="user-card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                  <button class="user-card-back" id="btnUserCardBack">← Back</button>
+                  <button class="user-card-back" id="btnUserCardSave" style="${isSaved ? 'color:var(--teal);border-color:var(--teal);' : ''}">${isSaved ? 'Saved ★' : 'Save Profile'}</button>
+                </div>
+                <div class="user-card-header">
+                  ${avatarHtml}
+                  <div>
+                    <div class="user-card-name">${u.name}</div>
+                    <div class="user-card-level">${u.level_string}</div>
+                  </div>
+                </div>
+                <div class="user-card-about">${(u.profile_about || 'No description').substring(0, 300)}${u.profile_about?.length > 300 ? '...' : ''}</div>
+              </div>
+            `;
+            const avatarEl = document.querySelector('#userCardWrap .user-card-avatar');
+            if (avatarEl && avatarPost) {
+              if (previewPanelEnabled) avatarEl.onmouseenter = () => showPreview(avatarPost);
+              avatarEl.onclick = () => {
+                let idx = posts.findIndex(x => x.id === avatarPost.id);
+                if (idx < 0) { posts.push(avatarPost); idx = posts.length - 1; }
+                openViewer(idx);
+              };
+            }
+            $('btnUserCardBack').onclick = () => {
+              if (canGoBack()) goBack();
+              else {
+                if (homeTab === 'favorites') {
+                  $('userCardWrap').style.display = 'none';
+                  return;
+                }
+                currentTags = currentTags.filter(t => t.tag !== favTag);
+                syncSearchInput();
+                renderChips();
+                runSearch(true);
+              }
+            };
+            $('btnUserCardSave').onclick = (e) => {
+              if (savedProfiles.includes(u.name)) {
+                savedProfiles = savedProfiles.filter(p => p !== u.name);
+                e.target.textContent = 'Save Profile';
+                e.target.style.color = '';
+                e.target.style.borderColor = '';
+              } else {
+                savedProfiles.push(u.name);
+                e.target.textContent = 'Saved ★';
+                e.target.style.color = 'var(--teal)';
+                e.target.style.borderColor = 'var(--teal)';
+              }
+              persistSavedProfiles();
+              $('savedProfilesBox').value = savedProfiles.join('\n');
+            };
+          } else {
+            if (reqId === _userCardReqId) $('userCardWrap').style.display = 'none';
+          }
+        }).catch(() => {
+          if (reqId === _userCardReqId) $('userCardWrap').style.display = 'none';
+        });
+      }
+
       async function runSearch(reset) {
         if (homeTab === 'notifications') return;
         if (loading) return;
         const mySearchId = ++_searchId; // capture this search's id
         if (reset) {
           page = 1; posts = []; endReached = false; grid.innerHTML = '';
-          $('userCardWrap').style.display = 'none';
-          $('userCardWrap').innerHTML = '';
-          const favTag = homeTab === 'favorites' ? `fav:${settings.username}` : currentTags.find(t => t.tag.startsWith('fav:') && !t.neg)?.tag;
-          if (favTag) {
-            const username = favTag.substring(4).trim();
-            if (username) {
-              $('userCardWrap').style.display = 'block';
-              $('userCardWrap').innerHTML = '<div class="empty-note" style="padding: 10px;">Loading user info…</div>';
-              api(`/users.json?search[name_matches]=${encodeURIComponent(username)}`).then(async data => {
-                if (_searchId !== mySearchId) return;
-                if (data && data.length > 0) {
-                  let u = data[0];
-                  try {
-                    const fullU = await api(`/users/${u.id}.json`);
-                    if (fullU) u = fullU;
-                  } catch (e) { }
-                  let avatarPost = null;
-                  let avatarHtml = `<div class="user-card-avatar-ph">${u.name[0].toUpperCase()}</div>`;
-                  if (u.avatar_id) {
-                    try {
-                      const pdata = await api(`/posts/${u.avatar_id}.json`);
-                      if (pdata && pdata.post && pdata.post.preview) {
-                        avatarPost = pdata.post;
-                        avatarHtml = `<img class="user-card-avatar" style="cursor:pointer;" src="${avatarPost.preview.url}">`;
-                      }
-                    } catch (e) { }
-                  }
-                  if (_searchId !== mySearchId) return;
-
-                  const isSaved = savedProfiles.includes(u.name);
-                  $('userCardWrap').innerHTML = `
-                             <div class="user-card">
-                               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                                 <button class="user-card-back" id="btnUserCardBack">← Back</button>
-                                 <button class="user-card-back" id="btnUserCardSave" style="${isSaved ? 'color:var(--teal);border-color:var(--teal);' : ''}">${isSaved ? 'Saved ✓' : 'Save Profile'}</button>
-                               </div>
-                               <div class="user-card-header">
-                                 ${avatarHtml}
-                                 <div>
-                                   <div class="user-card-name">${u.name}</div>
-                                   <div class="user-card-level">${u.level_string}</div>
-                                 </div>
-                               </div>
-                               <div class="user-card-about">${(u.profile_about || 'No description').substring(0, 300)}${u.profile_about?.length > 300 ? '...' : ''}</div>
-                             </div>
-                           `;
-                  const avatarEl = document.querySelector('#userCardWrap .user-card-avatar');
-                  if (avatarEl && avatarPost) {
-                    if (previewPanelEnabled) {
-                      avatarEl.onmouseenter = () => showPreview(avatarPost);
-                    }
-                    avatarEl.onclick = () => {
-                      let idx = posts.findIndex(x => x.id === avatarPost.id);
-                      if (idx < 0) { posts.push(avatarPost); idx = posts.length - 1; }
-                      openViewer(idx);
-                    };
-                  }
-                  $('btnUserCardBack').onclick = () => {
-                    if (canGoBack()) goBack();
-                    else {
-                      currentTags = currentTags.filter(t => t.tag !== favTag);
-                      syncSearchInput();
-                      renderChips();
-                      runSearch(true);
-                    }
-                  };
-                  $('btnUserCardSave').onclick = (e) => {
-                    if (savedProfiles.includes(u.name)) {
-                      savedProfiles = savedProfiles.filter(p => p !== u.name);
-                      e.target.textContent = 'Save Profile';
-                      e.target.style.color = '';
-                      e.target.style.borderColor = '';
-                    } else {
-                      savedProfiles.push(u.name);
-                      e.target.textContent = 'Saved ✓';
-                      e.target.style.color = 'var(--teal)';
-                      e.target.style.borderColor = 'var(--teal)';
-                    }
-                    persistSavedProfiles();
-                    $('savedProfilesBox').value = savedProfiles.join('\n');
-                  };
-                } else {
-                  $('userCardWrap').style.display = 'none';
-                }
-              }).catch(() => {
-                $('userCardWrap').style.display = 'none';
+          updateUserCard();
+e.display = 'none';
               });
             }
           }
@@ -3208,6 +3222,7 @@
         if (homeTab === 'newest') { sw.style.display = ''; note.style.display = 'none'; }
         else { sw.style.display = 'none'; note.style.display = 'block'; }
         syncSearchInput(); renderChips();
+        updateUserCard();
         grid.innerHTML = ''; appendPostsToGrid(posts);
         loadMoreBtn.style.display = endReached ? 'none' : 'block';
         statusline.style.display = 'none';
@@ -4748,6 +4763,7 @@
           });
           syncSearchInput();
           renderChips();
+          homeTab = null; // force fresh search on this tab
         }
         
         setHomeTab('search');
