@@ -1385,7 +1385,7 @@
       height: 16px;
     }
 
-    @media (max-width: 700px) {
+    @media (max-width: 750px) {
       .ht-text {
         display: none;
       }
@@ -1817,6 +1817,30 @@
     .searchwrap:not(:focus-within) .favtagbar {
       display: none !important;
     }
+
+    /* ---------- Bottom Bar on Thin Screens ---------- */
+    @media (max-width: 750px) {
+      body:not(.force-top-bar) #app {
+        flex-direction: column-reverse;
+      }
+      body:not(.force-top-bar) .topbar {
+        border-bottom: none;
+        border-top: 1px solid var(--line);
+        padding: 5px 10px calc(5px + var(--safe-bottom)) 10px;
+      }
+      body:not(.force-top-bar) .searchwrap {
+        border-bottom: none;
+        border-top: 1px solid var(--line);
+      }
+      body:not(.force-top-bar) .autocomplete-wrap {
+        top: auto;
+        bottom: 100%;
+        border-top: 1px solid var(--line);
+        border-bottom: none;
+        border-radius: 10px 10px 0 0;
+        box-shadow: 0 -8px 24px rgba(0,0,0,.45);
+      }
+    }
   </style>
 </head>
 
@@ -1861,14 +1885,7 @@
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
         </svg>
       </button>
-      <button class="iconbtn" id="btnDownloadAll" title="Download all images as ZIP" style="font-size:16px;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-          stroke-linejoin="round" style="width:16px;height:16px;">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-          <polyline points="7 10 12 15 17 10"></polyline>
-          <line x1="12" y1="15" x2="12" y2="3"></line>
-        </svg>
-      </button>
+
       <button class="iconbtn" id="btnMasonryToggle" title="Toggle Grid Layout" style="font-size:16px;">⊞</button>
       <button class="iconbtn" id="btnSlideshow" title="Slideshow">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
@@ -2121,6 +2138,13 @@
         </label>
         <div class="hint">Flips list actions (like tag buttons) to the left edge.</div>
       </div>
+      <div class="field">
+        <label class="setting-row" style="display:flex; justify-content:space-between; align-items:center;">
+          <span>Force Top Bar on Mobile</span>
+          <input type="checkbox" id="chkForceTopBar" class="toggle">
+        </label>
+        <div class="hint">Prevents the navigation and search bar from moving to the bottom of the screen on thin windows.</div>
+      </div>
 
       <h2 style="margin-top:26px;">Appearance</h2>
       <div class="field">
@@ -2210,7 +2234,7 @@
       // ======================================================================
       //  PERSISTENT STATE
       // ======================================================================
-      const DEFAULTS = { sourceUrl: 'https://e926.net', username: '', apiKey: '', autoHideUI: true, masonry: false, leftHandedMode: false };
+      const DEFAULTS = { sourceUrl: 'https://e926.net', username: '', apiKey: '', autoHideUI: true, masonry: false, leftHandedMode: false, forceTopBar: false };
       let settings = { ...DEFAULTS };
       let favoriteTags = [];
       let forYouTags = [];
@@ -2246,6 +2270,8 @@
 
         if (settings.leftHandedMode) document.body.classList.add('left-handed');
         else document.body.classList.remove('left-handed');
+        if (settings.forceTopBar) document.body.classList.add('force-top-bar');
+        else document.body.classList.remove('force-top-bar');
 
         $('chkAutoHide').checked = settings.autoHideUI;
         $('chkMasonry').checked = settings.masonry;
@@ -3520,44 +3546,7 @@
           updateSideButtons(post);
         } catch (e) { alert('Favorite failed: ' + e.message); }
       });
-      async function fetchWithFallback(url, fetchOpts, subtextEl) {
-           try {
-               const res = await fetch(url, fetchOpts);
-               if (!res.ok) throw new Error('Direct fetch failed');
-               return await res.blob();
-           } catch(e) {
-               console.warn('Direct fetch failed, trying proxy 1...', e);
-               if (subtextEl) subtextEl.textContent = 'Using proxy 1/3...';
-               try {
-                   const proxyUrl = 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url);
-                   const pRes = await fetch(proxyUrl);
-                   if (!pRes.ok) throw new Error('Proxy 1 failed');
-                   const blob = await pRes.blob();
-                   if (blob.type.includes('html')) throw new Error('Proxy 1 returned HTML');
-                   return blob;
-               } catch(e2) {
-                   console.warn('Proxy 1 failed, trying proxy 2...', e2);
-                   if (subtextEl) subtextEl.textContent = 'Using proxy 2/3...';
-                   try {
-                       const proxyUrl2 = 'https://corsproxy.io/?' + encodeURIComponent(url);
-                       const pRes2 = await fetch(proxyUrl2);
-                       if (!pRes2.ok) throw new Error('Proxy 2 failed');
-                       const blob = await pRes2.blob();
-                       if (blob.type.includes('html')) throw new Error('Proxy 2 returned HTML');
-                       return blob;
-                   } catch(e3) {
-                       console.warn('Proxy 2 failed, trying proxy 3 (slow)...', e3);
-                       if (subtextEl) subtextEl.textContent = 'Using proxy 3/3 (Slow)...';
-                       const proxyUrl3 = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
-                       const pRes3 = await fetch(proxyUrl3);
-                       if (!pRes3.ok) throw new Error('Proxy 3 failed');
-                       const blob = await pRes3.blob();
-                       if (blob.type.includes('html')) throw new Error('Proxy 3 returned HTML');
-                       return blob;
-                   }
-               }
-           }
-      }
+
 
       bindTap($('btnDownload'), async () => {
         const post = activeList()[viewerIndex];
@@ -3575,7 +3564,9 @@
               const auth = authHeader();
               if (auth) fetchOpts.headers = { 'Authorization': auth };
           }
-          const blob = await fetchWithFallback(url, fetchOpts, null);
+          const res = await fetch(url, fetchOpts);
+          if (!res.ok) throw new Error('Network error');
+          const blob = await res.blob();
           const a = document.createElement('a');
           a.href = URL.createObjectURL(blob);
           a.download = `post_${post.id}.${ext}`;
@@ -3585,7 +3576,7 @@
           URL.revokeObjectURL(a.href);
         } catch (e) {
           console.error('All download methods failed', e);
-          alert('Download failed. Your browser strictly blocked all download attempts. Please change your browser origin settings or run this via localhost.');
+          alert('Download failed due to strict browser CORS restrictions.\n\nPlease right-click the image on the screen and choose "Save image as..." to download it manually.');
         }
       });
 
@@ -4019,123 +4010,7 @@
       }
       $('btnBlacklistToggle').onclick = () => { blacklistEnabled = !blacklistEnabled; lsSet('blacklistEnabled', blacklistEnabled); updateBlacklistToggleUI(); runSearch(true); };
 
-      $('btnDownloadAll').onclick = async () => {
-        if (window.isZipping) {
-          alert('A download is already in progress!');
-          return;
-        }
-        if (!posts || posts.length === 0) {
-          alert('No posts to download.');
-          return;
-        }
-        if (posts.length > 50) {
-          if (!confirm(`You are about to download ${posts.length} images. This might consume a lot of memory and bandwidth. Proceed?`)) return;
-        }
-        window.isZipping = true;
 
-        const overlay = document.createElement('div');
-        overlay.innerHTML = `
-          <div style="position:fixed; bottom:20px; right:20px; width:300px; background:var(--bg-inset, #111); border:1px solid var(--accent, #f80); border-radius:8px; padding:15px; box-shadow:0 4px 12px rgba(0,0,0,0.5); z-index:99999; color:var(--text, white); font-family:sans-serif; pointer-events:none;">
-            <div id="bulkDownloadText" style="font-size:14px; font-weight:bold; margin-bottom:10px;">Initializing zip...</div>
-            <div style="width:100%; height:12px; background:var(--bg-panel, #333); border-radius:6px; overflow:hidden;">
-              <div id="bulkDownloadBar" style="width:0%; height:100%; background:var(--accent, #f80); transition:width 0.2s;"></div>
-            </div>
-            <div id="bulkDownloadSubtext" style="margin-top:8px; font-size:11px; color:var(--text-dim, #aaa);"></div>
-          </div>
-        `;
-        document.body.appendChild(overlay);
-        const textEl = document.getElementById('bulkDownloadText');
-        const subtextEl = document.getElementById('bulkDownloadSubtext');
-        const barEl = document.getElementById('bulkDownloadBar');
-
-        $('statusline').textContent = 'Initializing zip download...';
-        const zip = new JSZip();
-        let successCount = 0;
-        let index = 0;
-        let active = 0;
-        let attemptCount = 0;
-
-        await new Promise(resolve => {
-            function next() {
-                if (index >= posts.length && active === 0) return resolve();
-                while (active < 6 && index < posts.length) {
-                    const i = index++;
-                    active++;
-                    attemptCount++;
-                    downloadPost(posts[i], attemptCount).finally(() => {
-                        active--;
-                        next();
-                    });
-                }
-            }
-
-            async function downloadPost(post, attemptIndex) {
-                let url = post.file ? post.file.url : bestThumb(post);
-                if (!url) return;
-                if (url.startsWith('/')) url = settings.sourceUrl.replace(/\/+$/, '') + url;
-                else if (url.startsWith('//')) url = 'https:' + url;
-                
-                try {
-                    textEl.textContent = `Downloading ${attemptIndex} of ${posts.length}`;
-                    
-                    const fetchOpts = { mode: 'cors' };
-                    if (url.startsWith(settings.sourceUrl.replace(/\/+$/, ''))) {
-                        const auth = authHeader();
-                        if (auth) fetchOpts.headers = { 'Authorization': auth };
-                    }
-                    
-                    const blob = await fetchWithFallback(url, fetchOpts, subtextEl);
-
-                    const ext = (post.file && post.file.ext) ? post.file.ext : url.split('.').pop().split('?')[0] || 'jpg';
-                    zip.file(`post_${post.id}.${ext}`, blob);
-                    if (subtextEl) subtextEl.textContent = '';
-                    successCount++;
-                    barEl.style.width = Math.round((successCount / posts.length) * 100) + '%';
-                    $('statusline').textContent = `Downloading image ${successCount} of ${posts.length}...`;
-                } catch (e) {
-                    console.error(`Failed to download ${url}`, e);
-                }
-            }
-            
-            next();
-        });
-
-        if (successCount > 0) {
-          textEl.textContent = `Zipping ${successCount} images...`;
-          subtextEl.textContent = 'Please wait...';
-          barEl.style.width = '100%';
-          $('statusline').textContent = `Zipping ${successCount} images. This may take a moment...`;
-          
-          try {
-            await new Promise(r => setTimeout(r, 50));
-            const content = await zip.generateAsync({ type: 'blob' }, (metadata) => {
-                 subtextEl.textContent = 'Compressing... ' + Math.round(metadata.percent) + '%';
-                 if (metadata.percent < 100) barEl.style.width = Math.round(metadata.percent) + '%';
-            });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(content);
-            a.download = `knothub_download_${Date.now()}.zip`;
-            document.body.appendChild(a);
-            a.click();
-            URL.revokeObjectURL(a.href);
-            a.remove();
-            $('statusline').textContent = `Successfully downloaded ${successCount} images.`;
-          } catch (e) {
-            $('statusline').textContent = `Failed to create zip file: ${e.message}`;
-            alert(`Failed to create zip file: ${e.message}`);
-          }
-        } else {
-          $('statusline').textContent = 'No images could be downloaded.';
-          alert('No images could be downloaded. Check browser CORS settings or network connection.');
-        }
-
-        if (document.body.contains(overlay)) document.body.removeChild(overlay);
-        window.isZipping = false;
-
-        setTimeout(() => {
-          $('statusline').textContent = 'Enter a search or leave blank to browse recent posts.';
-        }, 5000);
-      };
 
       // ======================================================================
       //  SETTINGS PANEL
@@ -4155,6 +4030,7 @@
         $('chkAutoHide').checked = !!settings.autoHideUI;
         $('chkMasonry').checked = !!settings.masonry;
         $('chkLeftHanded').checked = !!settings.leftHandedMode;
+        $('chkForceTopBar').checked = !!settings.forceTopBar;
         $('settingsFollowedTitle').textContent = `Followed Artists (${forYouTags.length})`;
         $('settingsBlacklistTitle').textContent = `Global blacklist (${blacklistTags.length})`;
         if ($('settingsSavedProfilesTitle')) $('settingsSavedProfilesTitle').textContent = `Saved Profiles (${savedProfiles.length})`;
@@ -4164,6 +4040,8 @@
         panel.classList.remove('open');
         if (settings.leftHandedMode) document.body.classList.add('left-handed');
         else document.body.classList.remove('left-handed');
+        if (settings.forceTopBar) document.body.classList.add('force-top-bar');
+        else document.body.classList.remove('force-top-bar');
       }
 
       $('btnSettings').addEventListener('click', () => {
@@ -4188,6 +4066,10 @@
         if (e.target.checked) document.body.classList.add('left-handed');
         else document.body.classList.remove('left-handed');
       });
+      $('chkForceTopBar').addEventListener('change', e => {
+        if (e.target.checked) document.body.classList.add('force-top-bar');
+        else document.body.classList.remove('force-top-bar');
+      });
 
       $('btnSaveSettings').onclick = () => {
         settings.sourceUrl = $('setSource').value.trim() || DEFAULTS.sourceUrl;
@@ -4196,8 +4078,10 @@
         settings.autoHideUI = $('chkAutoHide').checked;
         settings.masonry = $('chkMasonry').checked;
         settings.leftHandedMode = $('chkLeftHanded').checked;
+        settings.forceTopBar = $('chkForceTopBar').checked;
         if (settings.masonry) grid.classList.add('masonry'); else grid.classList.remove('masonry');
         if (settings.leftHandedMode) document.body.classList.add('left-handed'); else document.body.classList.remove('left-handed');
+        if (settings.forceTopBar) document.body.classList.add('force-top-bar'); else document.body.classList.remove('force-top-bar');
         persistSettings();
         if (!settings.autoHideUI) {
           viewer.classList.remove('ui-hidden');
