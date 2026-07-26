@@ -3714,6 +3714,29 @@
         $('viewerDescModal').style.display = 'none';
       };
 
+      const descModal = $('viewerDescModal');
+      let descTouchStartY = 0, descTouchStartX = 0, descIsSwipingUp = false;
+      descModal.addEventListener('touchstart', e => {
+        const isAtBottom = descModal.scrollHeight - descModal.scrollTop - descModal.clientHeight < 2;
+        if (e.touches.length === 1 && isAtBottom) {
+          descTouchStartY = e.touches[0].clientY;
+          descTouchStartX = e.touches[0].clientX;
+          descIsSwipingUp = true;
+        } else {
+          descIsSwipingUp = false;
+        }
+      }, { passive: true });
+      descModal.addEventListener('touchmove', e => {
+        if (descIsSwipingUp && e.touches.length === 1) {
+          const dy = e.touches[0].clientY - descTouchStartY;
+          const dx = e.touches[0].clientX - descTouchStartX;
+          if (dy < -80 && Math.abs(dy) > Math.abs(dx) * 1.5) {
+            descModal.style.display = 'none';
+            descIsSwipingUp = false;
+          }
+        }
+      }, { passive: true });
+
       let ssTouchStartX = 0, ssTouchStartY = 0, ssTouchStartTime = 0;
       let ssTapCandidate = false;
       ssOverlay.addEventListener('touchstart', e => {
@@ -3829,9 +3852,10 @@
       }
       function closeDrawer() { drawerBackdrop.classList.remove('open'); drawer.classList.remove('open'); }
       
+      const drawerTabsOrder = ['tags', 'pools', 'artist', 'comments'];
       let dTouchStartY = 0, dTouchStartX = 0, dIsSwiping = false;
       drawer.addEventListener('touchstart', e => {
-        if (e.touches.length === 1 && drawerBody.scrollTop <= 0) {
+        if (e.touches.length === 1) {
           dTouchStartY = e.touches[0].clientY;
           dTouchStartX = e.touches[0].clientX;
           dIsSwiping = true;
@@ -3843,9 +3867,24 @@
         if (dIsSwiping && e.touches.length === 1) {
           const dy = e.touches[0].clientY - dTouchStartY;
           const dx = e.touches[0].clientX - dTouchStartX;
-          if (dy > 80 && dy > Math.abs(dx) * 1.5) {
+          if (dy > 80 && dy > Math.abs(dx) * 1.5 && drawerBody.scrollTop <= 0) {
             closeDrawer();
             dIsSwiping = false;
+          }
+        }
+      }, { passive: true });
+      drawer.addEventListener('touchend', e => {
+        if (!dIsSwiping || e.changedTouches.length !== 1) return;
+        const dx = e.changedTouches[0].clientX - dTouchStartX;
+        const dy = e.changedTouches[0].clientY - dTouchStartY;
+        
+        if (Math.abs(dx) > 120 && Math.abs(dx) > Math.abs(dy) * 2) {
+          const currentIndex = drawerTabsOrder.indexOf(drawerTab);
+          if (currentIndex !== -1) {
+            let newIndex = currentIndex;
+            if (dx < 0) newIndex = Math.min(currentIndex + 1, drawerTabsOrder.length - 1);
+            else newIndex = Math.max(currentIndex - 1, 0);
+            if (newIndex !== currentIndex) openDrawer(drawerTabsOrder[newIndex]);
           }
         }
       }, { passive: true });
@@ -3988,7 +4027,7 @@
               const score = (c.score >= 0 ? '+' : '') + c.score;
               const date = new Date(c.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
               const initial = (c.creator_name || '?')[0].toUpperCase();
-              const body = (c.body || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+              const body = parseMarkdown(c.body || '');
               return `<div class="comment-card"><div class="comment-avatar" data-creator-name="${CSS.escape(c.creator_name || '')}">${initial}</div><div class="comment-body-wrap"><div class="comment-meta"><span class="comment-author" data-author="${CSS.escape(c.creator_name || '')}" style="cursor:pointer;text-decoration:underline;">${c.creator_name || 'Anonymous'}</span><span class="comment-score">${score}</span><span class="comment-date">${date}</span></div><div class="comment-text">${body}</div></div></div>`;
             }).join('');
 
@@ -4697,8 +4736,52 @@
               notifCacheTime = Date.now();
               updateNotifBadge();
             } catch (e) { /* silent */ }
-          }, 3000); // Delay to not block initial page load
+          }, 3000); // Delay to not block initial load
         }
+        setHomeTab('search');
+        renderFavTagBar();
+        initDB();
+
+        const gridTabsOrder = ['search', 'favorites', 'foryou', 'saved_profiles', 'notifications'];
+        let gridSwipeStartX = 0, gridSwipeStartY = 0;
+        let gridSwiping = false;
+
+        document.body.addEventListener('touchstart', e => {
+          if ($('viewer').classList.contains('open') || 
+              $('drawer').classList.contains('open') || 
+              $('settingsPanel').classList.contains('open') ||
+              $('ssOverlay').classList.contains('open')) {
+            gridSwiping = false;
+            return;
+          }
+          if (e.touches.length === 1) {
+            gridSwipeStartX = e.touches[0].clientX;
+            gridSwipeStartY = e.touches[0].clientY;
+            gridSwiping = true;
+          }
+        }, { passive: true });
+
+        document.body.addEventListener('touchend', e => {
+          if (!gridSwiping || e.changedTouches.length !== 1) return;
+          const dx = e.changedTouches[0].clientX - gridSwipeStartX;
+          const dy = e.changedTouches[0].clientY - gridSwipeStartY;
+          
+          if (Math.abs(dx) > 120 && Math.abs(dx) > Math.abs(dy) * 2) {
+            const currentIndex = gridTabsOrder.indexOf(homeTab);
+            if (currentIndex !== -1) {
+               let newIndex = currentIndex;
+               if (dx < 0) {
+                  newIndex = Math.min(currentIndex + 1, gridTabsOrder.length - 1);
+               } else {
+                  newIndex = Math.max(currentIndex - 1, 0);
+               }
+               if (newIndex !== currentIndex) {
+                  setHomeTab(gridTabsOrder[newIndex]);
+               }
+            }
+          }
+          gridSwiping = false;
+        }, { passive: true });
       })();
 
     })();
