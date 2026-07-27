@@ -644,7 +644,7 @@
       cursor: pointer;
       text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
     }
-    
+
     .viewer-desc-modal {
       position: absolute;
       top: 60px;
@@ -1014,7 +1014,7 @@
       opacity: 0;
       pointer-events: none;
     }
-    
+
     .viewer.ui-hidden .viewer-top *,
     .viewer.ui-hidden .viewer-side *,
     .viewer.ui-hidden .viewer-bottom *,
@@ -1640,14 +1640,17 @@
       margin-bottom: 24px;
       overflow: hidden;
     }
+
     .panel-section .field {
       padding: 12px 14px;
       border-bottom: 1px solid var(--line);
       margin: 0;
     }
+
     .panel-section .field:last-child {
       border-bottom: none;
     }
+
     .panel-section .field label.setting-row {
       display: flex;
       justify-content: space-between;
@@ -1657,7 +1660,8 @@
       color: var(--text);
       cursor: pointer;
     }
-    .panel-section .field > label:not(.setting-row) {
+
+    .panel-section .field>label:not(.setting-row) {
       display: block;
       font-family: var(--mono);
       font-size: 11px;
@@ -1666,6 +1670,7 @@
       text-transform: uppercase;
       letter-spacing: .06em;
     }
+
     .panel-section input[type="text"],
     .panel-section input[type="password"],
     .panel-section textarea {
@@ -1679,6 +1684,7 @@
       font-family: var(--mono);
       resize: vertical;
     }
+
     .panel-section .hint {
       font-size: 11px;
       color: var(--text-dim);
@@ -1694,20 +1700,26 @@
       height: 24px;
       flex-shrink: 0;
     }
+
     .toggle-switch input {
       opacity: 0;
       width: 0;
       height: 0;
     }
+
     .toggle-slider {
       position: absolute;
       cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
       background-color: var(--bg-raised);
       border: 1px solid var(--line);
       transition: .2s;
       border-radius: 24px;
     }
+
     .toggle-slider:before {
       position: absolute;
       content: "";
@@ -1719,11 +1731,13 @@
       transition: .2s;
       border-radius: 50%;
     }
-    .toggle-switch input:checked + .toggle-slider {
+
+    .toggle-switch input:checked+.toggle-slider {
       background-color: var(--amber);
       border-color: var(--amber);
     }
-    .toggle-switch input:checked + .toggle-slider:before {
+
+    .toggle-switch input:checked+.toggle-slider:before {
       background-color: #fff;
       transform: translateX(20px);
     }
@@ -1944,22 +1958,25 @@
       body:not(.force-top-bar) #app {
         flex-direction: column-reverse;
       }
+
       body:not(.force-top-bar) .topbar {
         border-bottom: none;
         border-top: 1px solid var(--line);
         padding: 5px 10px calc(5px + var(--safe-bottom)) 10px;
       }
+
       body:not(.force-top-bar) .searchwrap {
         border-bottom: none;
         border-top: 1px solid var(--line);
       }
+
       body:not(.force-top-bar) .autocomplete-wrap {
         top: auto;
         bottom: 100%;
         border-top: 1px solid var(--line);
         border-bottom: none;
         border-radius: 10px 10px 0 0;
-        box-shadow: 0 -8px 24px rgba(0,0,0,.45);
+        box-shadow: 0 -8px 24px rgba(0, 0, 0, .45);
       }
     }
   </style>
@@ -2074,8 +2091,10 @@
         </div>
       </div>
       <div class="viewer-desc-modal" id="viewerDescModal">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; position:sticky; top:0; background:inherit; z-index:11;">
-          <button class="iconbtn" id="btnCloseDesc" style="width:30px; height:30px; background:rgba(255,255,255,0.1);">✕</button>
+        <div
+          style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; position:sticky; top:0; background:inherit; z-index:11;">
+          <button class="iconbtn" id="btnCloseDesc"
+            style="width:30px; height:30px; background:rgba(255,255,255,0.1);">✕</button>
           <h3 style="margin:0; font-size: 16px; flex:1; text-align:right;">Description</h3>
         </div>
         <div id="viewerDescFull" style="font-size: 14px; line-height: 1.5;"></div>
@@ -2209,12 +2228,20 @@
       <div class="ss-controls">
         <button class="ss-btn" id="ssBtnClose">✕ close</button>
         <button class="ss-btn" id="ssBtnPlayPause" style="display:flex;align-items:center;gap:4px;">
-          <svg class="ss-icon-pause" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-          <svg class="ss-icon-play" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="display:none;"><path d="M8 5v14l11-7z"/></svg>
+          <svg class="ss-icon-pause" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+          </svg>
+          <svg class="ss-icon-play" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"
+            style="display:none;">
+            <path d="M8 5v14l11-7z" />
+          </svg>
           <span class="ss-label">pause</span>
         </button>
         <button class="ss-btn" id="ssBtnShuffle" title="Shuffle mode" style="display:flex;align-items:center;gap:4px;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z" />
+          </svg>
         </button>
         <span class="ss-counter" id="ssCounter"></span>
         <span class="ss-speed-label">Speed:</span>
@@ -2258,36 +2285,43 @@
         <div class="field">
           <label class="setting-row">
             <span>Auto-hide UI in Viewer</span>
-            <label class="toggle-switch"><input type="checkbox" id="chkAutoHide" class="toggle" checked><span class="toggle-slider"></span></label>
+            <label class="toggle-switch"><input type="checkbox" id="chkAutoHide" class="toggle" checked><span
+                class="toggle-slider"></span></label>
           </label>
         </div>
         <div class="field">
           <label class="setting-row">
             <span>Masonry Grid Layout</span>
-            <label class="toggle-switch"><input type="checkbox" id="chkMasonry" class="toggle"><span class="toggle-slider"></span></label>
+            <label class="toggle-switch"><input type="checkbox" id="chkMasonry" class="toggle"><span
+                class="toggle-slider"></span></label>
           </label>
           <div class="hint">Toggle irregular grid mode. Also toggleable via the ⊞ icon in the top bar.</div>
         </div>
         <div class="field">
           <label class="setting-row">
             <span>Left-handed Mode</span>
-            <label class="toggle-switch"><input type="checkbox" id="chkLeftHanded" class="toggle"><span class="toggle-slider"></span></label>
+            <label class="toggle-switch"><input type="checkbox" id="chkLeftHanded" class="toggle"><span
+                class="toggle-slider"></span></label>
           </label>
           <div class="hint">Flips list actions (like tag buttons) to the left edge.</div>
         </div>
         <div class="field">
           <label class="setting-row">
             <span>Force Top Bar on Mobile</span>
-            <label class="toggle-switch"><input type="checkbox" id="chkForceTopBar" class="toggle"><span class="toggle-slider"></span></label>
+            <label class="toggle-switch"><input type="checkbox" id="chkForceTopBar" class="toggle"><span
+                class="toggle-slider"></span></label>
           </label>
-          <div class="hint">Prevents the navigation and search bar from moving to the bottom of the screen on thin windows.</div>
+          <div class="hint">Prevents the navigation and search bar from moving to the bottom of the screen on thin
+            windows.</div>
         </div>
         <div class="field">
           <label class="setting-row">
             <span>Preview Compatibility Mode</span>
-            <label class="toggle-switch"><input type="checkbox" id="chkCompatibilityMode" class="toggle"><span class="toggle-slider"></span></label>
+            <label class="toggle-switch"><input type="checkbox" id="chkCompatibilityMode" class="toggle"><span
+                class="toggle-slider"></span></label>
           </label>
-          <div class="hint">Force low-quality thumbnails for the preview panel (fixes broken previews on GitHub Pages or strict CORS environments).</div>
+          <div class="hint">Force low-quality thumbnails for the preview panel (fixes broken previews on GitHub Pages or
+            strict CORS environments).</div>
         </div>
       </div>
 
@@ -2299,7 +2333,7 @@
             <div style="display:flex; gap:10px; align-items:center;">
               <input type="color" id="setAccent" value="#e8a33d"
                 style="width:38px;height:38px;padding:2px;border-radius:7px;border:1px solid var(--line);background:var(--bg-inset);">
-              <input type="text" id="setAccentHex" value="#e8a33d" 
+              <input type="text" id="setAccentHex" value="#e8a33d"
                 style="width:85px; height:38px; padding:8px; border-radius:7px; border:1px solid var(--line); background:var(--bg-inset); color:var(--text); font-family:var(--mono); font-size:13px; outline:none; text-transform:uppercase;">
             </div>
           </label>
@@ -2310,7 +2344,7 @@
             <div style="display:flex; gap:10px; align-items:center;">
               <input type="color" id="setBgColor" value="#1b1d1f"
                 style="width:38px;height:38px;padding:2px;border-radius:7px;border:1px solid var(--line);background:var(--bg-inset);">
-              <input type="text" id="setBgColorHex" value="#1b1d1f" 
+              <input type="text" id="setBgColorHex" value="#1b1d1f"
                 style="width:85px; height:38px; padding:8px; border-radius:7px; border:1px solid var(--line); background:var(--bg-inset); color:var(--text); font-family:var(--mono); font-size:13px; outline:none; text-transform:uppercase;">
             </div>
           </label>
@@ -2784,9 +2818,23 @@
 
       async function fetchBatchedForYou(limit, pageNum = 1) {
         const batches = [];
-        const batchSize = 39;
-        for (let i = 0; i < forYouTags.length; i += batchSize) {
-          batches.push(forYouTags.slice(i, i + batchSize));
+        let currentBatch = [];
+        let currentTagCount = 0;
+        const maxTagsPerBatch = 39;
+        
+        for (const tagLine of forYouTags) {
+          const count = tagLine.trim().split(/\s+/).filter(Boolean).length;
+          if (count === 0) continue;
+          if (currentTagCount + count > maxTagsPerBatch && currentBatch.length > 0) {
+            batches.push(currentBatch);
+            currentBatch = [];
+            currentTagCount = 0;
+          }
+          currentBatch.push(tagLine);
+          currentTagCount += count;
+        }
+        if (currentBatch.length > 0) {
+          batches.push(currentBatch);
         }
         let allPosts = [];
         for (const batch of batches) {
@@ -2889,7 +2937,7 @@
 
           grid.innerHTML = '<div class="saved-profiles-list" style="padding: 12px; display: flex; flex-direction: column; gap: 10px; width: 100%;"></div>';
           const listEl = grid.querySelector('.saved-profiles-list');
-          
+
           const avatarIds = data.filter(u => u.avatar_id).map(u => u.avatar_id);
           const avatarPostsMap = {};
           if (avatarIds.length) {
@@ -2927,23 +2975,23 @@
             listEl.appendChild(card);
 
             if (u.avatar_id && avatarPostsMap[u.avatar_id]) {
-                const p = avatarPostsMap[u.avatar_id];
-                if (p.preview) {
-                  const thumb = card.querySelector('.notif-thumb');
-                  if (thumb) {
-                    thumb.outerHTML = `<img class="notif-thumb" src="${p.preview.url || bestThumb(p)}" style="border-radius:50%; display:block; flex-shrink:0; cursor:pointer;" loading="lazy">`;
-                    const newThumb = card.querySelector('.notif-thumb');
-                    if (previewPanelEnabled) {
-                      newThumb.onmouseenter = (e) => { e.stopPropagation(); showPreview(p); };
-                    }
-                    newThumb.onclick = (e) => {
-                      e.stopPropagation();
-                      let idx = posts.findIndex(x => x.id === p.id);
-                      if (idx < 0) { posts.push(p); idx = posts.length - 1; }
-                      openViewer(idx);
-                    };
+              const p = avatarPostsMap[u.avatar_id];
+              if (p.preview) {
+                const thumb = card.querySelector('.notif-thumb');
+                if (thumb) {
+                  thumb.outerHTML = `<img class="notif-thumb" src="${p.preview.url || bestThumb(p)}" style="border-radius:50%; display:block; flex-shrink:0; cursor:pointer;" loading="lazy">`;
+                  const newThumb = card.querySelector('.notif-thumb');
+                  if (previewPanelEnabled) {
+                    newThumb.onmouseenter = (e) => { e.stopPropagation(); showPreview(p); };
                   }
+                  newThumb.onclick = (e) => {
+                    e.stopPropagation();
+                    let idx = posts.findIndex(x => x.id === p.id);
+                    if (idx < 0) { posts.push(p); idx = posts.length - 1; }
+                    openViewer(idx);
+                  };
                 }
+              }
             }
           }
         } catch (e) {
@@ -3239,8 +3287,8 @@
         const isLocal = window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
         const useLowQuality = settings.compatibilityMode || !isLocal;
         let url = useLowQuality
-            ? ((post.preview && post.preview.url) || bestThumb(post))
-            : ((post.sample && post.sample.url) || (post.file && post.file.url) || bestThumb(post));
+          ? ((post.preview && post.preview.url) || bestThumb(post))
+          : ((post.sample && post.sample.url) || (post.file && post.file.url) || bestThumb(post));
         if (!url) return;
         if (url.startsWith('/')) url = settings.sourceUrl.replace(/\/+$/, '') + url;
         else if (url.startsWith('//')) url = 'https:' + url;
@@ -3341,8 +3389,15 @@
         }
         syncSearchInput(); renderChips();
         updateUserCard();
-        grid.innerHTML = ''; appendPostsToGrid(posts);
-        loadMoreBtn.style.display = endReached ? 'none' : 'block';
+        if (homeTab === 'saved_profiles') {
+          grid.innerHTML = ''; loadMoreBtn.style.display = 'none';
+          renderSavedProfiles();
+        } else if (homeTab === 'notifications') {
+          grid.innerHTML = ''; loadMoreBtn.style.display = 'none';
+        } else {
+          grid.innerHTML = ''; appendPostsToGrid(posts);
+          loadMoreBtn.style.display = endReached ? 'none' : 'block';
+        }
         statusline.style.display = 'none';
         requestAnimationFrame(() => gridwrap.scrollTop = state.scrollTop);
         if (viewer.classList.contains('open')) renderSlide();
@@ -3568,7 +3623,7 @@
         updateViewerBackBtn();
         attachGestures(slide, el);
         preloadViewerNeighbors(viewerIndex);
-        
+
         const desc = post.description || '';
         if (desc.trim()) {
           $('viewerDescPreview').style.display = '-webkit-box';
@@ -3670,7 +3725,7 @@
           mouseStartX = e.clientX;
           mouseStartY = e.clientY;
         });
-        
+
         window.addEventListener('mousemove', e => {
           if (!mouseDragging) return;
           const dx = e.clientX - mouseStartX;
@@ -3679,7 +3734,7 @@
           mouseStartX = e.clientX; mouseStartY = e.clientY;
           clampPan(el); applyTransform(el);
         });
-        
+
         window.addEventListener('mouseup', () => { mouseDragging = false; });
 
         container.addEventListener('touchstart', e => {
@@ -3771,7 +3826,7 @@
         post.own_vote = (post.own_vote === score) ? 0 : score;
         updateSideButtons(post);
         btn.classList.add('pending-vote');
-        
+
         try {
           const r = await api(`/posts/${post.id}/votes.json`, {
             method: 'POST',
@@ -3787,9 +3842,9 @@
               if (typeof r.down === 'number') post.score.down = Math.abs(r.down);
             }
           }
-        } catch (e) { 
+        } catch (e) {
           post.own_vote = prevVote;
-          alert('Vote failed: ' + e.message); 
+          alert('Vote failed: ' + e.message);
         } finally {
           btn.classList.remove('pending-vote');
           updateSideButtons(post);
@@ -3819,18 +3874,18 @@
         post.is_favorited = !wasFav;
         updateSideButtons(post);
         btn.classList.add('pending-vote');
-        
+
         if (post.is_favorited) showFavOverlay();
-        
+
         try {
           if (wasFav) {
             await api(`/favorites/${post.id}.json`, { method: 'DELETE' });
           } else {
             await api(`/favorites.json`, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: `post_id=${post.id}` });
           }
-        } catch (e) { 
-          post.is_favorited = wasFav; 
-          alert('Favorite failed: ' + e.message); 
+        } catch (e) {
+          post.is_favorited = wasFav;
+          alert('Favorite failed: ' + e.message);
         } finally {
           btn.classList.remove('pending-vote');
           updateSideButtons(post);
@@ -3844,17 +3899,17 @@
         const post = activeList()[viewerIndex];
         let url = post.file ? post.file.url : bestThumb(post);
         if (!url) return;
-        
+
         const ext = post.file && post.file.ext ? post.file.ext : url.split('.').pop().split('?')[0] || 'jpg';
-        
+
         if (url.startsWith('/')) url = settings.sourceUrl.replace(/\/+$/, '') + url;
         else if (url.startsWith('//')) url = 'https:' + url;
 
         try {
           const fetchOpts = { mode: 'cors' };
           if (url.startsWith(settings.sourceUrl.replace(/\/+$/, ''))) {
-              const auth = authHeader();
-              if (auth) fetchOpts.headers = { 'Authorization': auth };
+            const auth = authHeader();
+            if (auth) fetchOpts.headers = { 'Authorization': auth };
           }
           const res = await fetch(url, fetchOpts);
           if (!res.ok) throw new Error('Network error');
@@ -4055,7 +4110,7 @@
         renderDrawer();
       }
       function closeDrawer() { drawerBackdrop.classList.remove('open'); drawer.classList.remove('open'); }
-      
+
       const drawerTabsOrder = ['tags', 'pools', 'artist', 'comments'];
       let dTouchStartY = 0, dTouchStartX = 0, dIsSwiping = false;
       drawer.addEventListener('touchstart', e => {
@@ -4081,7 +4136,7 @@
         if (!dIsSwiping || e.changedTouches.length !== 1) return;
         const dx = e.changedTouches[0].clientX - dTouchStartX;
         const dy = e.changedTouches[0].clientY - dTouchStartY;
-        
+
         if (Math.abs(dx) > 120 && Math.abs(dx) > Math.abs(dy) * 2) {
           const currentIndex = drawerTabsOrder.indexOf(drawerTab);
           if (currentIndex !== -1) {
@@ -4432,7 +4487,7 @@
         blacklistTags = parseNewlineTags($('blacklistBox').value);
         savedProfiles = parseNewlineTags($('savedProfilesBox').value);
         persistFavTags(); persistForYouTags(); persistBlacklist(); persistSavedProfiles(); renderFavTagBar();
-        
+
         if (homeTab === 'foryou') {
           const note = $('foryouNote');
           if (forYouTags.length) note.style.display = 'none';
@@ -4444,7 +4499,7 @@
           renderSavedProfiles();
         }
         if (homeTab === 'favorites') setHomeTab('favorites');
-        
+
         $('settingsFollowedTitle').textContent = `Followed Artists (${forYouTags.length})`;
         $('settingsBlacklistTitle').textContent = `Global blacklist (${blacklistTags.length})`;
         if ($('settingsSavedProfilesTitle')) $('settingsSavedProfilesTitle').textContent = `Saved Profiles (${savedProfiles.length})`;
@@ -4503,17 +4558,17 @@
       $('btnClosePanel').addEventListener('click', closeSettings);
 
       $('setAccent').addEventListener('input', e => { applyAccentColor(e.target.value); lsSet('accentColor', e.target.value); });
-      $('setAccentHex').addEventListener('input', e => { 
-        let val = e.target.value; 
+      $('setAccentHex').addEventListener('input', e => {
+        let val = e.target.value;
         if (/^#[0-9a-fA-F]{6}$/.test(val)) { applyAccentColor(val); lsSet('accentColor', val); }
       });
-      
+
       $('setBgColor').addEventListener('input', e => { applyBgColor(e.target.value); lsSet('bgColor', e.target.value); });
-      $('setBgColorHex').addEventListener('input', e => { 
-        let val = e.target.value; 
+      $('setBgColorHex').addEventListener('input', e => {
+        let val = e.target.value;
         if (/^#[0-9a-fA-F]{6}$/.test(val)) { applyBgColor(val); lsSet('bgColor', val); }
       });
-      
+
       $('chkLeftHanded').addEventListener('change', e => {
         if (e.target.checked) document.body.classList.add('left-handed');
         else document.body.classList.remove('left-handed');
@@ -4994,7 +5049,7 @@
             } catch (e) { /* silent */ }
           }, 3000); // Delay to not block initial load
         }
-        
+
         const urlParams = new URLSearchParams(window.location.search);
         const urlTags = urlParams.get('tags');
         if (urlTags) {
@@ -5006,7 +5061,7 @@
           renderChips();
           homeTab = null; // force fresh search on this tab
         }
-        
+
         setHomeTab('search');
         renderFavTagBar();
         initDB();
@@ -5016,10 +5071,10 @@
         let gridSwiping = false;
 
         document.body.addEventListener('touchstart', e => {
-          if ($('viewer').classList.contains('open') || 
-              $('drawer').classList.contains('open') || 
-              $('settingsPanel').classList.contains('open') ||
-              $('ssOverlay').classList.contains('open')) {
+          if ($('viewer').classList.contains('open') ||
+            $('drawer').classList.contains('open') ||
+            $('settingsPanel').classList.contains('open') ||
+            $('ssOverlay').classList.contains('open')) {
             gridSwiping = false;
             return;
           }
@@ -5034,19 +5089,19 @@
           if (!gridSwiping || e.changedTouches.length !== 1) return;
           const dx = e.changedTouches[0].clientX - gridSwipeStartX;
           const dy = e.changedTouches[0].clientY - gridSwipeStartY;
-          
+
           if (Math.abs(dx) > 120 && Math.abs(dx) > Math.abs(dy) * 2) {
             const currentIndex = gridTabsOrder.indexOf(homeTab);
             if (currentIndex !== -1) {
-               let newIndex = currentIndex;
-               if (dx < 0) {
-                  newIndex = Math.min(currentIndex + 1, gridTabsOrder.length - 1);
-               } else {
-                  newIndex = Math.max(currentIndex - 1, 0);
-               }
-               if (newIndex !== currentIndex) {
-                  setHomeTab(gridTabsOrder[newIndex]);
-               }
+              let newIndex = currentIndex;
+              if (dx < 0) {
+                newIndex = Math.min(currentIndex + 1, gridTabsOrder.length - 1);
+              } else {
+                newIndex = Math.max(currentIndex - 1, 0);
+              }
+              if (newIndex !== currentIndex) {
+                setHomeTab(gridTabsOrder[newIndex]);
+              }
             }
           }
           gridSwiping = false;
