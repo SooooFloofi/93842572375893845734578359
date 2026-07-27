@@ -2868,6 +2868,7 @@
         }
         homeTab = tab;
         _searchId++; // invalidate any in-flight searches
+        loading = false;
         document.querySelectorAll('.hometab').forEach(b => b.classList.toggle('active', b.dataset.hometab === tab));
         const sw = document.querySelector('.searchwrap'), note = $('foryouNote');
 
@@ -3015,7 +3016,7 @@
       let _userCardReqId = 0;
       function updateUserCard() {
         const reqId = ++_userCardReqId;
-        const favTag = homeTab === 'favorites' ? `fav:${settings.username}` : currentTags.find(t => t.tag.startsWith('fav:') && !t.neg)?.tag;
+        const favTag = homeTab === 'favorites' ? `fav:${settings.username}` : (homeTab === 'search' ? currentTags.find(t => t.tag.startsWith('fav:') && !t.neg)?.tag : null);
         if (!favTag) {
           $('userCardWrap').style.display = 'none';
           $('userCardWrap').innerHTML = '';
@@ -3111,7 +3112,7 @@
       }
 
       async function runSearch(reset) {
-        if (homeTab === 'notifications') return;
+        if (homeTab === 'notifications' || homeTab === 'saved_profiles') return;
         if (loading) return;
         const mySearchId = ++_searchId; // capture this search's id
         if (reset) {
@@ -3153,8 +3154,12 @@
           if (_searchId !== mySearchId) { loading = false; return; }
           statusline.style.display = 'block';
           let msg = err.message;
-          if (msg === 'Failed to fetch') msg += ' (This usually means a network error or a temporary server block. Please wait a minute and try again.)';
-          statusline.textContent = 'Could not load: ' + msg + (authHeader() ? '' : ' — add your username & API key in Settings.');
+          if (msg.includes('403') && q && q.includes('fav:')) {
+            statusline.textContent = "Could not load: This user's favorites are hidden.";
+          } else {
+            if (msg === 'Failed to fetch') msg += ' (This usually means a network error or a temporary server block. Please wait a minute and try again.)';
+            statusline.textContent = 'Could not load: ' + msg + (authHeader() ? '' : ' — add your username & API key in Settings.');
+          }
         }
         loading = false;
       }
