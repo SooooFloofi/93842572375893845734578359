@@ -801,12 +801,15 @@
       position: absolute;
       bottom: 0;
       left: 0;
+      right: 0;
       height: 3px;
       background: var(--amber);
-      width: 0%;
+      transform: scaleX(0);
+      transform-origin: left center;
       opacity: 0;
-      transition: opacity 0.2s, width 0.1s linear;
+      transition: opacity 0.2s;
       z-index: 99;
+      will-change: transform, opacity;
     }
 
     .ss-progress {
@@ -3133,7 +3136,10 @@
       applyPreviewPanelState();
 
       function showPreview(post) {
-        let url = (post.sample && post.sample.url) || (post.file && post.file.url) || bestThumb(post);
+        const isLocal = window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        let url = isLocal
+            ? ((post.sample && post.sample.url) || (post.file && post.file.url) || bestThumb(post))
+            : ((post.preview && post.preview.url) || bestThumb(post));
         if (!url) return;
         if (url.startsWith('/')) url = settings.sourceUrl.replace(/\/+$/, '') + url;
         else if (url.startsWith('//')) url = 'https:' + url;
@@ -3542,9 +3548,8 @@
               } else {
                 verticalSwipeCandidate = false;
                 $('swipeProgress').style.opacity = '1';
-                $('swipeProgress').style.width = Math.min(100, (Math.abs(dx) / 50) * 100) + '%';
-                $('swipeProgress').style.left = dx < 0 ? 'auto' : '0';
-                $('swipeProgress').style.right = dx < 0 ? '0' : 'auto';
+                $('swipeProgress').style.transformOrigin = dx < 0 ? 'right center' : 'left center';
+                $('swipeProgress').style.transform = `scaleX(${Math.min(1, Math.abs(dx) / 50)})`;
               }
             }
           }
@@ -3552,7 +3557,7 @@
         container.addEventListener('touchend', e => {
           pinching = false;
           $('swipeProgress').style.opacity = '0';
-          $('swipeProgress').style.width = '0%';
+          $('swipeProgress').style.transform = 'scaleX(0)';
           if (dragging && pinchScale === 1) {
             const wd = verticalSwipeCandidate && dragDY > 120 && dragDY > Math.abs(dragDX);
             container.style.opacity = '';
