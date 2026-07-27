@@ -2862,8 +2862,18 @@
 
       function setHomeTab(tab) {
         if (homeTab === tab) {
-          if (tab === 'foryou') runSearch(true);
-          else if (tab === 'notifications') renderNotifications(true);
+          if (tab === 'search') {
+            currentTags = [];
+            syncSearchInput();
+            renderChips();
+            runSearch(true);
+          } else if (tab === 'foryou' || tab === 'favorites') {
+            runSearch(true);
+          } else if (tab === 'notifications') {
+            renderNotifications(true);
+          } else if (tab === 'saved_profiles') {
+            renderSavedProfiles();
+          }
           return;
         }
         homeTab = tab;
