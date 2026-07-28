@@ -1203,13 +1203,13 @@
     }
 
     .left-handed .viewer-bottom-left {
-      left: auto !important;
-      right: 14px !important;
+      grid-column: 3 !important;
+      justify-self: end !important;
     }
 
     .left-handed .viewer-bottom-right {
-      right: auto !important;
-      left: 14px !important;
+      grid-column: 1 !important;
+      justify-self: start !important;
     }
 
     .tagbtn.star {
@@ -1803,13 +1803,15 @@
     }
 
     .ss-btn {
-      font-family: var(--mono);
-      font-size: 13px;
       background: rgba(255, 255, 255, .1);
       color: #fff;
       border: 1px solid rgba(255, 255, 255, .25);
-      padding: 12px 18px;
-      border-radius: 24px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .ss-counter {
@@ -2086,6 +2088,21 @@
           style="background:rgba(0,0,0,.45);border-color:rgba(255,255,255,.25);" title="Close">✕</button>
         <div class="viewer-desc-preview" id="viewerDescPreview" title="Show Description"></div>
         <div class="viewer-top-right">
+          <button class="iconbtn" id="btnViewerSlideshow"
+            style="background:rgba(0,0,0,.45);border-color:rgba(255,255,255,.25);" title="Start slideshow from here">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+              stroke-linejoin="round" style="width:20px;height:20px;margin-top:2px;">
+              <rect x="2" y="2" width="14" height="14" rx="2" ry="2" stroke-opacity="0.5" />
+              <rect x="6" y="6" width="16" height="16" rx="2" ry="2" fill="#333" stroke="currentColor" />
+              <g fill="#ff85c6" stroke="none">
+                <circle cx="10" cy="11.5" r="1.5" />
+                <circle cx="12.5" cy="9.5" r="1.5" />
+                <circle cx="15.5" cy="9.5" r="1.5" />
+                <circle cx="18" cy="11.5" r="1.5" />
+                <path d="M14,18 C11,18 9,16 9.5,14 C10,12 12,12 14,12 C16,12 18,12 18.5,14 C19,16 17,18 14,18 Z" />
+              </g>
+            </svg>
+          </button>
           <button class="iconbtn" id="btnOpenSite"
             style="background:rgba(0,0,0,.45);border-color:rgba(255,255,255,.25);" title="Open on site">↗</button>
         </div>
@@ -2103,7 +2120,7 @@
       <div class="viewer-side right">
         <button class="vbtn" id="btnUp" title="Upvote">▲</button>
         <button class="vbtn" id="btnDown" title="Downvote">▼</button>
-        <button class="vbtn" id="btnFav" title="Favorite">♥</button>
+        <button class="vbtn" id="btnFav" title="Favorite">★</button>
         <button class="vbtn" id="btnDownload" title="Download image" style="margin-top: 10px;">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -2119,83 +2136,72 @@
           </svg>
         </button>
       </div>
-      <div class="viewer-bottom-right"
-        style="position:absolute; bottom:calc(14px + var(--safe-bottom)); right:14px; z-index:9; transition:opacity .3s ease;">
-        <button class="vbtn" id="btnViewerSlideshow"
-          style="background:rgba(0,0,0,.45);border-color:rgba(255,255,255,.25);" title="Start slideshow from here">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-            stroke-linejoin="round" style="width:20px;height:20px;margin-top:2px;">
-            <rect x="2" y="2" width="14" height="14" rx="2" ry="2" stroke-opacity="0.5" />
-            <rect x="6" y="6" width="16" height="16" rx="2" ry="2" fill="#333" stroke="currentColor" />
-            <g fill="#ff85c6" stroke="none">
-              <circle cx="10" cy="11.5" r="1.5" />
-              <circle cx="12.5" cy="9.5" r="1.5" />
-              <circle cx="15.5" cy="9.5" r="1.5" />
-              <circle cx="18" cy="11.5" r="1.5" />
-              <path d="M14,18 C11,18 9,16 9.5,14 C10,12 12,12 14,12 C16,12 18,12 18.5,14 C19,16 17,18 14,18 Z" />
-            </g>
-          </svg>
-        </button>
-      </div>
-      <div class="viewer-bottom-left"
-        style="position:absolute; bottom:calc(14px + var(--safe-bottom)); left:14px; z-index:9; transition:opacity .3s ease;">
-        <span class="viewer-rating" id="viewerRating"></span>
-      </div>
       <div class="viewer-bottom">
-        <!-- Prev / counter / next -->
-        <div class="viewer-navrow">
-          <button class="navpillbtn" id="btnNavPrev" title="Previous">‹</button>
-          <div class="counter" id="viewerCounter"></div>
-          <button class="navpillbtn" id="btnNavNext" title="Next">›</button>
-        </div>
-        <!-- All pill actions in one row -->
-        <div class="viewer-pillrow" id="viewerPillRow">
-          <button class="pillbtn back-btn" id="btnViewerBack" style="display:none;">← back</button>
-          <button class="roundbtn rel" id="btnGoParent" style="display:none;" disabled title="Parent">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
-              stroke-linejoin="round">
-              <polyline points="14 9 9 4 4 9"></polyline>
-              <path d="M20 20h-7a4 4 0 0 1-4-4V4"></path>
-            </svg>
-          </button>
-          <button class="roundbtn rel child-rel" id="btnGoChildren" style="display:none;" disabled title="Children">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
-              stroke-linejoin="round">
-              <polyline points="10 15 15 20 20 15"></polyline>
-              <path d="M4 4h7a4 4 0 0 1 4 4v12"></path>
-            </svg>
-          </button>
-          <button class="roundbtn" id="btnTagsDrawer" title="Tags">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-              stroke-linejoin="round">
-              <line x1="8" y1="6" x2="21" y2="6"></line>
-              <line x1="8" y1="12" x2="21" y2="12"></line>
-              <line x1="8" y1="18" x2="21" y2="18"></line>
-              <line x1="3" y1="6" x2="3.01" y2="6"></line>
-              <line x1="3" y1="12" x2="3.01" y2="12"></line>
-              <line x1="3" y1="18" x2="3.01" y2="18"></line>
-            </svg>
-          </button>
-          <button class="roundbtn" id="btnPoolDrawer" style="display:none;" title="Pools">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-              <polyline points="2 12 12 17 22 12"></polyline>
-              <polyline points="2 17 12 22 22 17"></polyline>
-            </svg>
-          </button>
-          <button class="roundbtn" id="btnArtistDrawer" title="Artist">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <circle cx="13.5" cy="6.5" r=".5"></circle>
-              <circle cx="17.5" cy="10.5" r=".5"></circle>
-              <circle cx="8.5" cy="7.5" r=".5"></circle>
-              <circle cx="6.5" cy="12.5" r=".5"></circle>
-              <path
-                d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z">
-              </path>
-            </svg>
-          </button>
+        <div style="display:grid; grid-template-columns: 1fr auto 1fr; width:100%; align-items:end; gap: 10px;">
+          <!-- Left side -->
+          <div class="viewer-bottom-left" style="grid-row:1; grid-column:1; justify-self:start; transition:opacity .3s ease;">
+            <span class="viewer-rating" id="viewerRating"></span>
+          </div>
+
+          <!-- Center -->
+          <div style="grid-row:1; grid-column:2; display:flex; flex-direction:column; align-items:center; gap:6px;">
+            <div class="viewer-navrow">
+              <button class="navpillbtn" id="btnNavPrev" title="Previous"><</button>
+              <div class="counter" id="viewerCounter"></div>
+              <button class="navpillbtn" id="btnNavNext" title="Next">></button>
+            </div>
+            <div class="viewer-pillrow" id="viewerPillRow">
+              <button class="roundbtn back-btn" id="btnViewerBack" style="display:none; color:var(--red); border-color:var(--red);" title="Back">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="19" y1="12" x2="5" y2="12"></line>
+                  <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+              </button>
+              <button class="roundbtn rel" id="btnGoParent" style="display:none;" disabled title="Parent">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <polyline points="14 9 9 4 4 9"></polyline>
+                  <path d="M20 20h-7a4 4 0 0 1-4-4V4"></path>
+                </svg>
+              </button>
+              <button class="roundbtn rel child-rel" id="btnGoChildren" style="display:none;" disabled title="Children">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <polyline points="10 15 15 20 20 15"></polyline>
+                  <path d="M4 4h7a4 4 0 0 1 4 4v12"></path>
+                </svg>
+              </button>
+              <button class="roundbtn" id="btnTagsDrawer" title="Tags">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <line x1="8" y1="6" x2="21" y2="6"></line>
+                  <line x1="8" y1="12" x2="21" y2="12"></line>
+                  <line x1="8" y1="18" x2="21" y2="18"></line>
+                  <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                  <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                  <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                </svg>
+              </button>
+              <button class="roundbtn" id="btnPoolDrawer" style="display:none;" title="Pools">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                  <polyline points="2 12 12 17 22 12"></polyline>
+                  <polyline points="2 17 12 22 22 17"></polyline>
+                </svg>
+              </button>
+              <button class="roundbtn" id="btnArtistDrawer" title="Artist">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <circle cx="13.5" cy="6.5" r=".5"></circle>
+                  <circle cx="17.5" cy="10.5" r=".5"></circle>
+                  <circle cx="8.5" cy="7.5" r=".5"></circle>
+                  <circle cx="6.5" cy="12.5" r=".5"></circle>
+                  <path
+                    d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z">
+                  </path>
+                </svg>
+              </button>
           <button class="roundbtn" id="btnCommentsDrawer" style="display:none;" title="Comments">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
               stroke-linejoin="round">
@@ -2206,7 +2212,15 @@
           </button>
         </div>
       </div>
-      <div class="swipe-progress-bar" id="swipeProgress"></div>
+
+      <!-- Right side -->
+      <div class="viewer-bottom-right" style="grid-row:1; grid-column:3; justify-self:end; display:flex; align-items:center; gap:8px; transition:opacity .3s ease; min-width:0;">
+        <span id="viewerArtistName" style="color:var(--amber); font-family:var(--mono); font-size:13px; font-weight:600; cursor:pointer; text-decoration:underline; text-shadow:0 1px 3px rgba(0,0,0,0.8); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display:none;"></span>
+        <button id="btnViewerFollowArtist" class="vbtn" style="width:36px; height:36px; flex-shrink: 0; background:rgba(0,0,0,.45); border-color:var(--red); color:var(--red); display:none;" title="Follow Artist">♥</button>
+      </div>
+    </div>
+  </div>
+  <div class="swipe-progress-bar" id="swipeProgress"></div>
     </div>
 
     <!-- Details drawer -->
@@ -2226,8 +2240,10 @@
     <div class="slideshow-overlay" id="ssOverlay">
       <div class="ss-img-wrap" id="ssImgWrap"></div>
       <div class="ss-controls">
-        <button class="ss-btn" id="ssBtnClose">✕ close</button>
-        <button class="ss-btn" id="ssBtnPlayPause" style="display:flex;align-items:center;gap:4px;">
+        <button class="ss-btn" id="ssBtnClose" title="Close" style="color:var(--red); border-color:var(--red);">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+        <button class="ss-btn" id="ssBtnPlayPause" title="Play/Pause">
           <svg class="ss-icon-pause" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
             <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
           </svg>
@@ -2235,9 +2251,8 @@
             style="display:none;">
             <path d="M8 5v14l11-7z" />
           </svg>
-          <span class="ss-label">pause</span>
         </button>
-        <button class="ss-btn" id="ssBtnShuffle" title="Shuffle mode" style="display:flex;align-items:center;gap:4px;">
+        <button class="ss-btn" id="ssBtnShuffle" title="Shuffle mode">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
             <path
               d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z" />
@@ -2245,8 +2260,12 @@
         </button>
         <span class="ss-counter" id="ssCounter"></span>
         <span class="ss-speed-label">Speed:</span>
-        <button class="ss-btn" id="ssBtnSlower">− slower</button>
-        <button class="ss-btn" id="ssBtnFaster">+ faster</button>
+        <button class="ss-btn" id="ssBtnSlower" title="Slower">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </button>
+        <button class="ss-btn" id="ssBtnFaster" title="Faster">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </button>
         <span class="ss-counter" id="ssSpeedLabel"></span>
       </div>
       <div class="ss-progress" id="ssProgress">
@@ -2535,13 +2554,20 @@
           .replace(/\[i\](.*?)\[\/i\]/gi, '<i>$1</i>')
           .replace(/\[u\](.*?)\[\/u\]/gi, '<u>$1</u>')
           .replace(/\[s\](.*?)\[\/s\]/gi, '<s>$1</s>')
-          .replace(/\[quote\]([\s\S]*?)\[\/quote\]/gi, '<blockquote style="border-left:3px solid var(--amber); margin:5px 0; padding-left:10px; color:var(--text-dim);">$1</blockquote>')
+          .replace(/\[quote(?:=["']?(.*?)["']?)?\]([\s\S]*?)\[\/quote\]/gi, (match, username, quote) => {
+            if (username) {
+              return `<blockquote style="border-left:3px solid var(--amber); margin:5px 0; padding-left:10px; color:var(--text-dim);">&quot;${username} said:<br>${quote.trim()}&quot;</blockquote>`;
+            } else {
+              return `<blockquote style="border-left:3px solid var(--amber); margin:5px 0; padding-left:10px; color:var(--text-dim);">${quote.trim()}</blockquote>`;
+            }
+          })
           .replace(/\[url=(.*?)\](.*?)\[\/url\]/gi, '<a href="$1" target="_blank" style="color:var(--amber);">$2</a>')
           .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
           .replace(/\*(.*?)\*/g, '<i>$1</i>')
           .replace(/~~(.*?)~~/g, '<s>$1</s>')
           .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" style="color:var(--amber);">$1</a>')
           .replace(/"(.*?)":([^\s]+)/g, '<a href="$2" target="_blank" style="color:var(--amber);">$1</a>')
+          .replace(/post #(\d+)/gi, '<div class="embedded-post-placeholder" data-post-id="$1">post #$1</div>')
           .replace(/\n/g, '<br>');
       }
 
@@ -2667,7 +2693,7 @@
         }, 120);
       }
 
-      searchInput.addEventListener('input', updateAC);
+      searchInput.addEventListener('input', () => { updateAC(); lsSet('lastSearchInput', searchInput.value); });
       searchInput.addEventListener('keydown', e => {
         if (!autocompleteWrap.classList.contains('open')) {
           if (e.key === 'Enter') { $('btnSearch').click(); searchInput.blur(); }
@@ -2809,6 +2835,20 @@
         return q ? q + ' ' + bl : bl;
       }
 
+      function isPostBlacklisted(post) {
+        if (!blacklistEnabled || blacklistTags.length === 0) return false;
+        if (!post || !post.tags) return false;
+        for (const cat in post.tags) {
+          const arr = post.tags[cat];
+          if (Array.isArray(arr)) {
+            for (let i = 0; i < arr.length; i++) {
+              if (blacklistTags.includes(arr[i])) return true;
+            }
+          }
+        }
+        return false;
+      }
+
       function buildActiveQuery() {
         if (homeTab === 'foryou') { return 'foryou'; }
         if (homeTab === 'favorites') { if (!settings.username) return null; return applyBlacklist('fav:' + settings.username); }
@@ -2877,6 +2917,7 @@
           return;
         }
         homeTab = tab;
+        lsSet('lastHomeTab', tab);
         _searchId++; // invalidate any in-flight searches
         loading = false;
         document.querySelectorAll('.hometab').forEach(b => b.classList.toggle('active', b.dataset.hometab === tab));
@@ -3054,7 +3095,9 @@
                 const pdata = await api(`/posts/${u.avatar_id}.json`);
                 if (pdata && pdata.post && pdata.post.preview) {
                   avatarPost = pdata.post;
-                  avatarHtml = `<img class="user-card-avatar" style="cursor:pointer;" src="${avatarPost.preview.url}">`;
+                  if (!isPostBlacklisted(avatarPost)) {
+                    avatarHtml = `<img class="user-card-avatar" style="cursor:pointer;" src="${avatarPost.preview.url}">`;
+                  }
                 }
               } catch (e) { }
             }
@@ -3439,6 +3482,15 @@
       const artistPostsAccumulator = {};
 
       function activeList() { return currentPoolPosts || posts; }
+
+      function openEmbeddedPost(post) {
+        pushNavState();
+        posts = [post];
+        viewerIndex = 0;
+        currentPoolPosts = null;
+        currentArtistName = null;
+        openViewer(0);
+      }
 
       function openViewer(idx) {
         if (panel.classList.contains('open')) closeSettings();
@@ -3828,6 +3880,33 @@
         const uv = post.own_vote === 1, dv = post.own_vote === -1;
         $('btnUp').className = 'vbtn' + (uv ? ' active-up' : '');
         $('btnDown').className = 'vbtn' + (dv ? ' active-down' : '');
+
+        const artists = (post.tags && post.tags.artist) || [];
+        const artistWrap = $('viewerArtistName');
+        const followBtn = $('btnViewerFollowArtist');
+        if (artistWrap && followBtn) {
+          if (artists.length > 0) {
+            const artistName = artists[0];
+            artistWrap.style.display = 'inline-block';
+            followBtn.style.display = 'flex';
+            artistWrap.textContent = artistName;
+            artistWrap.onclick = () => { closeViewer(); searchTagDirectly(artistName); };
+            const isFollowed = forYouTags.includes(artistName);
+            followBtn.innerHTML = isFollowed ? '♥' : '♡';
+            followBtn.style.color = isFollowed ? 'var(--red)' : '#fff';
+            followBtn.style.borderColor = isFollowed ? 'var(--red)' : 'rgba(255,255,255,.25)';
+            followBtn.onclick = () => {
+              const idx = forYouTags.indexOf(artistName);
+              if (idx >= 0) forYouTags.splice(idx, 1);
+              else forYouTags.push(artistName);
+              persistForYouTags();
+              updateSideButtons(post);
+            };
+          } else {
+            artistWrap.style.display = 'none';
+            followBtn.style.display = 'none';
+          }
+        }
       }
 
       bindTap($('btnUp'), () => vote(1));
@@ -3868,7 +3947,7 @@
 
       function showFavOverlay() {
         let heart = document.createElement('div');
-        heart.innerHTML = '♥';
+        heart.innerHTML = '★';
         heart.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.5);font-size:100px;color:var(--amber);opacity:0;pointer-events:none;z-index:9999;transition:all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);text-shadow:0 4px 12px rgba(0,0,0,0.5);';
         viewerStage.appendChild(heart);
         requestAnimationFrame(() => {
@@ -4087,9 +4166,21 @@
         if (!viewer.classList.contains('open') && !ssOverlay.classList.contains('open') && posts.length > 0) {
           if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
             e.preventDefault();
-            if (gridSelectedIndex < 0) gridSelectedIndex = 0;
-            else if (e.key === 'ArrowLeft') gridSelectedIndex = Math.max(0, gridSelectedIndex - 1);
-            else if (e.key === 'ArrowRight') gridSelectedIndex = Math.min(posts.length - 1, gridSelectedIndex + 1);
+            if (gridSelectedIndex < 0) {
+              const children = Array.from(grid.children);
+              let found = 0;
+              for (let i = 0; i < children.length; i++) {
+                if (children[i].getBoundingClientRect().top > 50) {
+                  found = i;
+                  break;
+                }
+              }
+              gridSelectedIndex = found;
+            } else if (e.key === 'ArrowLeft') {
+              gridSelectedIndex = Math.max(0, gridSelectedIndex - 1);
+            } else if (e.key === 'ArrowRight') {
+              gridSelectedIndex = Math.min(posts.length - 1, gridSelectedIndex + 1);
+            }
 
             Array.from(grid.children).forEach((c, i) => {
               if (i === gridSelectedIndex) {
@@ -4300,6 +4391,7 @@
             const data = await api(`/comments.json?search[post_id]=${post.id}&group_by=comment&limit=25`);
             if (currentRenderId !== _drawerRenderId) return;
             const comments = Array.isArray(data) ? data : [];
+            comments.sort((a,b) => a.id - b.id);
             if (!comments.length) { drawerBody.innerHTML = '<div class="empty-note">No comments on this post.</div>'; return; }
             drawerBody.innerHTML = comments.map(c => {
               const score = (c.score >= 0 ? '+' : '') + c.score;
@@ -4327,7 +4419,7 @@
                 }
                 validUsers.forEach(u => {
                   const p = avatarPostsMap[u.avatar_id];
-                  if (p && p.preview) {
+                  if (p && p.preview && !isPostBlacklisted(p)) {
                     const url = p.preview.url || bestThumb(p);
                     drawerBody.querySelectorAll(`.comment-avatar[data-creator-name="${CSS.escape(u.name)}"]`).forEach(el => {
                       el.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;">`;
@@ -4340,6 +4432,27 @@
               const author = el.dataset.author;
               if (!author) return;
               el.onclick = () => searchUserFavs(author);
+            });
+
+            drawerBody.querySelectorAll('.embedded-post-placeholder').forEach(async el => {
+              const pid = el.dataset.postId;
+              try {
+                const pdata = await api(`/posts/${pid}.json`);
+                if (pdata && pdata.post) {
+                  const pObj = pdata.post;
+                  if (isPostBlacklisted(pObj)) {
+                    el.innerHTML = `<div style="display:inline-block; border:1px solid var(--line); border-radius:4px; padding:4px; background:var(--bg-inset); color:var(--text-dim); font-size:11px; font-family:var(--mono);">BLACKLISTED: post #${pid}</div>`;
+                  } else {
+                    const thumb = bestThumb(pObj);
+                    el.innerHTML = `<a href="javascript:void(0)" style="display:inline-block; border:1px solid var(--line); border-radius:4px; padding:4px; background:var(--bg-inset);"><img src="${thumb}" style="max-height:120px; max-width:120px; object-fit:cover; display:block;"></a>`;
+                    el.querySelector('a').onclick = (e) => {
+                       e.preventDefault();
+                       closeDrawer();
+                       openEmbeddedPost(pObj);
+                    };
+                  }
+                }
+              } catch(e) {}
             });
           } catch (e) { drawerBody.innerHTML = `<div class="empty-note">Could not load comments: ${e.message}</div>`; }
         }
@@ -5077,7 +5190,10 @@
           homeTab = null; // force fresh search on this tab
         }
 
-        setHomeTab('search');
+        const savedSearchInput = lsGet('lastSearchInput');
+        if (savedSearchInput) { searchInput.value = savedSearchInput; }
+        const savedHomeTab = lsGet('lastHomeTab');
+        if (savedHomeTab) { setHomeTab(savedHomeTab); } else { setHomeTab('search'); }
         renderFavTagBar();
         initDB();
 
